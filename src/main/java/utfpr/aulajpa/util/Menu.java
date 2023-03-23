@@ -15,7 +15,7 @@ public abstract class Menu {
 
     public static String servicos = "Selecione uma opcao: \n "
             + "(0 - Sair | 1 - Cadastrar | 2 - Atualizar Descrição | 3 - Excluir "
-            + "| 4 - Atualizar Animal"
+            + "| 4 - Atualizar Animal "
             + "| 5 - Consultar serviços do dia)\n";
 
     public static void printGeral() {
