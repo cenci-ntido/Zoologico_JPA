@@ -22,11 +22,11 @@ public abstract class Menu {
         System.out.println(geral);
     }
 
-    public static void printDisciplinas() {
+    public static void printAnimais() {
         System.out.println(animais);
     }
 
-    public static void printAlunos() {
+    public static void printServicos() {
         System.out.println(servicos);
     }
 

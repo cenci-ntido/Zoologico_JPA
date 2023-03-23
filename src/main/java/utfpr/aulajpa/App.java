@@ -3,6 +3,8 @@ package utfpr.aulajpa;
 import java.util.List;
 import java.util.Scanner;
 import javax.persistence.EntityManager;
+import utfpr.aulajpa.dao.EspecieDAO;
+import utfpr.aulajpa.model.Especie;
 import utfpr.aulajpa.util.Factory;
 import utfpr.aulajpa.util.Menu;
 
@@ -19,22 +21,20 @@ public class App {
             case 0:
                 break;
             case 1:
-                Menu.printDisciplinas();
+                Menu.printEspecies();
                 int opcaoD = scanner.nextInt();
-                DisciplinaDAO disDAO = new DisciplinaDAO(em);
+                EspecieDAO especieDao = new EspecieDAO(em);
                 switch (opcaoD) {
                     case 0:
                         break;
                     case 1:
-                        System.out.println("Informe o nome da disciplina:\n");
+                        System.out.println("Informe o nome da espécie:\n");
                         scanner.nextLine();
-                        String nomeDis = scanner.nextLine();
-                        scanner.nextLine();
-                        System.out.println("Informe a quantidade de alunos:\n");
-                        int qtdDis = scanner.nextInt();
-                        Disciplina disciplina = new Disciplina(nomeDis, qtdDis);
-                        disDAO.salvar(disciplina);
-                        System.out.println("Disciplina Cadastrada!");
+                        String nomeEsp = scanner.nextLine();
+                        scanner.nextLine();                 
+                        Especie especie = new Especie(nomeEsp);
+                        especieDao.salvar(especie);
+                        System.out.println("Espécie Cadastrada!");
                         break;
                     case 2:
                         System.out.println("Informe o código da disciplina para atualizar o nome:\n");
