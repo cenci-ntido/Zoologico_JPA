@@ -21,6 +21,10 @@ public class EspecieDAO {
         return em.createQuery(jpql, Especie.class).getResultList();
     }
 
+    public Especie buscaEspecie(Long id) {
+        return this.em.find(Especie.class, id);
+    }
+
     public void atualizar(Especie especie) {
         this.em.merge(especie);
     }
