@@ -1,6 +1,5 @@
 package utfpr.aulajpa.model;
 
-import utfpr.aulajpa.util.EnumProfissional;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -13,21 +12,21 @@ public class Profissional {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String nome;
-    private EnumProfissional tipo;
+    private String tipo;
 
     public Profissional() {
     }
 
-    public Profissional(String nome, EnumProfissional tipo) {
+    public Profissional(String nome, String tipo) {
         this.nome = nome;
         this.tipo = tipo;
     }
 
-    public EnumProfissional getTipo() {
+    public String getTipo() {
         return tipo;
     }
 
-    public void setTipo(EnumProfissional tipo) {
+    public void setTipo(String tipo) {
         this.tipo = tipo;
     }
 

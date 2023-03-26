@@ -77,4 +77,5 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+    <name>Exercicio Zoologico</name>
 </project>
