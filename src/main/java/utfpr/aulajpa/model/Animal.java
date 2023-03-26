@@ -21,10 +21,11 @@ public class Animal {
     public Animal() {
     }
 
-    public Animal(String nome, Especie especie, Profissional profissionalResponsavel) {
-        this.nome = nome;
-        this.especie = especie;
-        this.profissionalResponsavel = profissionalResponsavel;
+    @Override
+    public String toString() {
+        return "Animal código:" + id + ", nome=" + nome + ", "
+                + "especie=" + this.especie.getNome()
+                + ", profissionalResponsavel=" + this.profissionalResponsavel.getNome();
     }
 
     public Profissional getProfissionalResponsavel() {
@@ -41,14 +42,6 @@ public class Animal {
 
     public void setEspecie(Especie especie) {
         this.especie = especie;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getNome() {

@@ -17,10 +17,6 @@ public class Profissional {
     public Profissional() {
     }
 
-    public Profissional(String nome, String tipo) {
-        this.nome = nome;
-        this.tipo = tipo;
-    }
 
     public String getTipo() {
         return tipo;
@@ -28,14 +24,6 @@ public class Profissional {
 
     public void setTipo(String tipo) {
         this.tipo = tipo;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getNome() {

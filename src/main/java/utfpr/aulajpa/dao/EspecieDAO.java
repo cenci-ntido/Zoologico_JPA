@@ -15,4 +15,8 @@ public class EspecieDAO {
         this.em.persist(especie);
     }
 
+    public Especie buscaPorNome(String nome) {
+        String jpql = "SELECT e FROM Especie e WHERE e.nome = :campo";
+        return em.createQuery(jpql, Especie.class).setParameter("campo", nome).getResultList().get(0);
+    }
 }

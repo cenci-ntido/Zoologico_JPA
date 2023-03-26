@@ -16,18 +16,13 @@ public class AnimalDAO {
         this.em.persist(animal);
     }
 
-    public List<Animal> buscaTodosProfissionais() {
+    public Animal buscaPorNome(String nome) {
+        String jpql = "SELECT a FROM Animal a WHERE a.nome = :campo";
+        return em.createQuery(jpql, Animal.class).setParameter("campo", nome).getResultList().get(0);
+    }
+
+    public List<Animal> buscaTodos() {
         String jpql = "SELECT a FROM Animal a";
         return em.createQuery(jpql, Animal.class).getResultList();
     }
-
-    public void atualizar(Animal animal) {
-        this.em.merge(animal);
-    }
-
-    public void excluir(Animal animal) {
-        atualizar(animal);
-        this.em.remove(animal);
-    }
-
 }

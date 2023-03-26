@@ -15,4 +15,8 @@ public class ProfissionalDAO {
         this.em.persist(profissional);
     }
 
+    public Profissional buscaPorNome(String nome) {
+        String jpql = "SELECT p FROM Profissional p WHERE p.nome = :campo";
+        return em.createQuery(jpql, Profissional.class).setParameter("campo", nome).getResultList().get(0);
+    }
 }
