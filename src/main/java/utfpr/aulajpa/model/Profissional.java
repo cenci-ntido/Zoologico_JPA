@@ -1,22 +1,15 @@
 package utfpr.aulajpa.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import org.bson.types.ObjectId;
 
-@Entity
 public class Profissional {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private ObjectId _id;
     private String nome;
     private String tipo;
 
     public Profissional() {
     }
-
 
     public String getTipo() {
         return tipo;
@@ -34,4 +27,11 @@ public class Profissional {
         this.nome = nome;
     }
 
+    public ObjectId getId() {
+        return _id;
+    }
+
+    public void setId(ObjectId _id) {
+        this._id = _id;
+    }
 }

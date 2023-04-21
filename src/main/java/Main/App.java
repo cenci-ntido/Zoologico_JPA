@@ -14,18 +14,26 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Scanner;
 import javax.persistence.EntityManager;
-import utfpr.aulajpa.dao.AnimalDAO;
-import utfpr.aulajpa.dao.EspecieDAO;
-import utfpr.aulajpa.dao.ProfissionalDAO;
-import utfpr.aulajpa.dao.ServicoDAO;
 import utfpr.aulajpa.model.Animal;
 import utfpr.aulajpa.model.Especie;
 import utfpr.aulajpa.model.Profissional;
 import utfpr.aulajpa.model.Servico;
-import utfpr.aulajpa.util.Factory;
+import org.bson.Document;
+import com.google.gson.Gson;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 
 public class App {
 
+    private static MongoClient client = new MongoClient();
+    private static MongoDatabase db = client.getDatabase("Zoologico");
+    private static MongoCollection<Document> especies = db.getCollection("especie");
+    private static MongoCollection<Document> profissionais = db.getCollection("profissional");
+    private static MongoCollection<Document> animais = db.getCollection("animal");
+    private static MongoCollection<Document> servicos = db.getCollection("servico");
     public static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) throws ParseException {
@@ -60,12 +68,12 @@ public class App {
                 case 4 -> {
                     cadastrarServico();
                 }
-                case 5 -> {
-                    listarServicosNaoRealizados();
-                }
-                case 6 -> {
-                    listarAnimais();
-                }
+//                case 5 -> {
+//                    listarServicosNaoRealizados();
+//                }
+//                case 6 -> {
+//                    listarAnimais();
+//                }
                 default -> {
                     System.out.println("Opção inválida.");
                     break;
@@ -76,147 +84,191 @@ public class App {
     }
 
     public static void cadastrarEspecie() {
-        EntityManager em = Factory.getEntityManager();
-        EspecieDAO especieDAO = new EspecieDAO(em);
-        em.getTransaction().begin();
         System.out.println("Informe o nome da espécie: ");
-        scanner.nextLine();
-        String nome = scanner.nextLine();
-        Especie especie = new Especie();
-        especie.setNome(nome);
-        especieDAO.salvar(especie);
-        em.getTransaction().commit();
+        String nome = scanner.next();
+
+        System.out.println("Informe o nome científico: ");
+        String nomeCient = scanner.next();
+
+        System.out.println("Informe o nome da família: ");
+        String familia = scanner.next();
+
+        System.out.println("Informe os comportamentos: ");
+        String comportamentos = scanner.next();
+
+        Document especie = new Document("nome", nome)
+                .append("nome-cient", nomeCient)
+                .append("familia", familia)
+                .append("comportamentos", comportamentos);
+
+        especies.insertOne(especie);
+
         System.out.println("Espécie Cadastrada!");
-        em.close();
     }
 
     public static void cadastrarProfissional() {
-        EntityManager em = Factory.getEntityManager();
-        ProfissionalDAO profissionalDAO = new ProfissionalDAO(em);
-        em.getTransaction().begin();
-        Profissional profissional = new Profissional();
-
         System.out.println("Informe o nome do profissional: ");
-        scanner.nextLine();
-        String nome = scanner.nextLine();
-        profissional.setNome(nome);
-        scanner.nextLine();
+        String nome = scanner.next();
 
         System.out.println("Informe o tipo do profissional: ");
-        String tipo = scanner.nextLine();
-        profissional.setTipo(tipo);
+        String tipo = scanner.next();
 
-        profissionalDAO.salvar(profissional);
-        em.getTransaction().commit();
+        Document profissional = new Document("nome", nome)
+                .append("tipo", tipo);
+
+        profissionais.insertOne(profissional);
+
         System.out.println("Profissional Cadastrado!");
-        em.close();
     }
 
     public static void cadastrarAnimal() {
-        EntityManager em = Factory.getEntityManager();
-        AnimalDAO animalDAO = new AnimalDAO(em);
-        em.getTransaction().begin();
-        Animal animal = new Animal();
         System.out.println("Informe o nome do animal: ");
-        scanner.nextLine();
-        String nome = scanner.nextLine();
-        animal.setNome(nome);
-        scanner.nextLine();
+        String nome = scanner.next();
 
-        System.out.println("Informe o nome do profissional responsável: ");
-        String nomeProfissional = scanner.nextLine();
-        ProfissionalDAO profissionalDAO = new ProfissionalDAO(em);
-        Profissional profissional = profissionalDAO.buscaPorNome(nomeProfissional);
-        animal.setProfissionalResponsavel(profissional);
+        Document profissional = null;
+        boolean sair = false;
+        while (!sair) {
+            System.out.println("Informe o nome do profissional responsável: ");
+            String nomeProfissional = scanner.next();
+            MongoCursor<Document> profissionaisRes = profissionais.find(
+                    Filters.eq("nome", nomeProfissional))
+                    .limit(1)
+                    .iterator();
+            if (profissionaisRes.hasNext()) {
+                // Se houver um resultado o método next() para obter o documento 
+                profissional = profissionaisRes.next();
+                sair = true;
+            } else {
+                System.out.println("Profissional não encontrado, tente novamente!");
+            }
+        }
 
-        System.out.println("Informe o nome da espécie: ");
-        String nomeEspecie = scanner.nextLine();
-        EspecieDAO especieDAO = new EspecieDAO(em);
-        Especie especie = especieDAO.buscaPorNome(nomeEspecie);
-        animal.setEspecie(especie);
+        Document especie = null;
+        sair = false;
+        while (!sair) {
+            System.out.println("Informe o nome da espécie: ");
+            String nomeEspecie = scanner.next();
+            MongoCursor<Document> especiesRes = especies.find(
+                    Filters.eq("nome", nomeEspecie))
+                    .limit(1)
+                    .iterator();
+            if (especiesRes.hasNext()) {
+                // Se houver um resultado o método next() para obter o documento 
+                especie = especiesRes.next();
+                sair = true;
+            } else {
+                System.out.println("Espécie não encontrada, tente novamente!");
+            }
+        }
 
-        animalDAO.salvar(animal);
-        em.getTransaction().commit();
+        Document animal = new Document("nome", nome)
+                .append("id_profissional", profissional.getObjectId("_id"))
+                .append("id_especie", especie.getObjectId("_id"));
+
+        animais.insertOne(animal);
         System.out.println("Animal Cadastrado!");
-        em.close();
     }
 
     public static void cadastrarServico() throws ParseException {
-        EntityManager em = Factory.getEntityManager();
-        ServicoDAO servicoDAO = new ServicoDAO(em);
-        em.getTransaction().begin();
-        Servico servico = new Servico();
-
+        boolean servicoRealizado = false;
         System.out.println("Informe a descricao do serviço: ");
-        scanner.nextLine();
-        String descricao = scanner.nextLine();
-        servico.setDescricao(descricao);
-        scanner.nextLine();
+        String descricao = scanner.next();
 
-        System.out.println("Informe o profissional responsável:");
-        String nomeProfissional = scanner.nextLine();
-        ProfissionalDAO profissionalDAO = new ProfissionalDAO(em);
-        Profissional profissional = profissionalDAO.buscaPorNome(nomeProfissional);
-        servico.setProfissional(profissional);
+        Document profissional = null;
+        boolean sair = false;
+        while (!sair) {
+            System.out.println("Informe o nome do profissional responsável: ");
+            String nomeProfissional = scanner.next();
+            MongoCursor<Document> profissionaisRes = profissionais.find(
+                    Filters.eq("nome", nomeProfissional))
+                    .limit(1)
+                    .iterator();
+            if (profissionaisRes.hasNext()) {
+                // Se houver um resultado o método next() para obter o documento 
+                profissional = profissionaisRes.next();
+                sair = true;
+            } else {
+                System.out.println("Profissional não encontrado, tente novamente!");
+            }
+        }
 
-        System.out.println("Informe o nome do animal: ");
-        String nomeAnimal = scanner.nextLine();
-        AnimalDAO AnimalDAO = new AnimalDAO(em);
-        Animal animal = AnimalDAO.buscaPorNome(nomeAnimal);
-        servico.setAnimal(animal);
+        Document animal = null;
+        sair = false;
+        while (!sair) {
+            System.out.println("Informe o nome do animal: ");
+            String nomeAnimal = scanner.next();
+            MongoCursor<Document> animalRes = animais.find(
+                    Filters.eq("nome", nomeAnimal))
+                    .limit(1)
+                    .iterator();
+            if (animalRes.hasNext()) {
+                // Se houver um resultado o método next() para obter o documento 
+                animal = animalRes.next();
+                sair = true;
+            } else {
+                System.out.println("Profissional não encontrado, tente novamente!");
+            }
+        }
 
         boolean loop = true;
         while (loop) {
             System.out.println("O serviço já foi realizado? (Sim ou não)");
-            String realizado = scanner.nextLine();
-
+            String realizado = scanner.next();
             if (realizado.equalsIgnoreCase("sim")) {
-                servico.setRealizado(true);
+                servicoRealizado = true;
                 loop = false;
             } else if (realizado.equalsIgnoreCase("não") || realizado.equalsIgnoreCase("nao")) {
-                servico.setRealizado(false);
+                servicoRealizado = false;
                 loop = false;
             } else {
                 System.out.println("Opção inválida, digite novamente!");
             }
         }
-
-        System.out.println("Informe a data e hora final do serviço (no formato dd/mm/yyyy hh:mm:ss): ");
-        String dataHoraString = scanner.nextLine();
-        try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-            Timestamp dataHora = new Timestamp(dateFormat.parse(dataHoraString).getTime());
-            servico.setDataHoraFim(dataHora);
-
-        } catch (ParseException e) {
-            System.out.println("Data e hora inválida!");
+        
+        Timestamp dataHoraFim = null;
+        loop = true;
+        while (loop) {
+            System.out.println("Informe a data e hora final do serviço (no formato dd/mm/yyyy hh:mm:ss): ");
+            String dataHoraString = scanner.nextLine();
+            try {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+                Timestamp dataHora = new Timestamp(dateFormat.parse(dataHoraString).getTime());
+                dataHoraFim = dataHora;
+                loop = false;
+            } catch (ParseException e) {
+                System.out.println("Data e hora inválida!");
+                loop = true;
+            }
         }
 
-        servico.setDataHora(Timestamp.valueOf(LocalDateTime.now()));
+        Document servico = new Document("descricao", descricao)
+                .append("id_profissional", profissional.getObjectId("_id"))
+                .append("id_animal", animal.getObjectId("_id"))
+                .append("dataHoraCadastro", Timestamp.valueOf(LocalDateTime.now()))
+                .append("dataHoraFim", dataHoraFim)
+                .append("realizado", servicoRealizado);
 
-        servicoDAO.salvar(servico);
-        em.getTransaction().commit();
-        System.out.println("Animal Cadastrado!");
-        em.close();
+        servicos.insertOne(servico);
+        System.out.println("Serviço Cadastrado!");
     }
 
-    public static void listarServicosNaoRealizados() {
-        EntityManager em = Factory.getEntityManager();
-        ServicoDAO servicoDAO = new ServicoDAO(em);
-        em.getTransaction().begin();
-        List<Servico> servicosNaoRealizados = servicoDAO.listarServicosNaoRealizados();
-        servicosNaoRealizados.stream().forEach(servico -> System.out.println(servico.toString()));
-        em.getTransaction().commit();
-        em.close();
-    }
-
-    public static void listarAnimais() {
-        EntityManager em = Factory.getEntityManager();
-        AnimalDAO animalDAO = new AnimalDAO(em);
-        em.getTransaction().begin();
-        List<Animal> animais = animalDAO.buscaTodos();
-        animais.stream().forEach(animal -> System.out.println(animal.toString()));
-        em.getTransaction().commit();
-        em.close();
-    }
+//    public static void listarServicosNaoRealizados() {
+//        EntityManager em = Factory.getEntityManager();
+//        ServicoDAO servicoDAO = new ServicoDAO(em);
+//        em.getTransaction().begin();
+//        List<Servico> servicosNaoRealizados = servicoDAO.listarServicosNaoRealizados();
+//        servicosNaoRealizados.stream().forEach(servico -> System.out.println(servico.toString()));
+//        em.getTransaction().commit();
+//        em.close();
+//    }
+//
+//    public static void listarAnimais() {
+//        EntityManager em = Factory.getEntityManager();
+//        AnimalDAO animalDAO = new AnimalDAO(em);
+//        em.getTransaction().begin();
+//        List<Animal> animais = animalDAO.buscaTodos();
+//        animais.stream().forEach(animal -> System.out.println(animal.toString()));
+//        em.getTransaction().commit();
+//        em.close();
+//    }
 }

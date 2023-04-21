@@ -1,47 +1,24 @@
 package utfpr.aulajpa.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import org.bson.types.ObjectId;
 
-@Entity
 public class Animal {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private ObjectId _id;
     private String nome;
-    @ManyToOne
-    private Especie especie;
-    @ManyToOne
-    private Profissional profissionalResponsavel;
+    private ObjectId id_especie;
+    private ObjectId id_profissional;
 
     public Animal() {
+
     }
 
-    @Override
-    public String toString() {
-        return "Animal código:" + id + ", nome=" + nome + ", "
-                + "especie=" + this.especie.getNome()
-                + ", profissionalResponsavel=" + this.profissionalResponsavel.getNome();
+    public ObjectId getId() {
+        return _id;
     }
 
-    public Profissional getProfissionalResponsavel() {
-        return profissionalResponsavel;
-    }
-
-    public void setProfissionalResponsavel(Profissional profissionalResponsavel) {
-        this.profissionalResponsavel = profissionalResponsavel;
-    }
-
-    public Especie getEspecie() {
-        return especie;
-    }
-
-    public void setEspecie(Especie especie) {
-        this.especie = especie;
+    public void setId(ObjectId _id) {
+        this._id = _id;
     }
 
     public String getNome() {
@@ -50,6 +27,22 @@ public class Animal {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public ObjectId getId_especie() {
+        return id_especie;
+    }
+
+    public void setId_especie(ObjectId id_especie) {
+        this.id_especie = id_especie;
+    }
+
+    public ObjectId getId_profissional() {
+        return id_profissional;
+    }
+
+    public void setId_profissional(ObjectId id_profissional) {
+        this.id_profissional = id_profissional;
     }
 
 }

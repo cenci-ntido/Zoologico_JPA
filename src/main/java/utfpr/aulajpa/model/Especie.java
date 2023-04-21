@@ -1,17 +1,15 @@
 package utfpr.aulajpa.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import org.bson.types.ObjectId;
 
-@Entity
 public class Especie {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+
+    private ObjectId _id;
     private String nome;
-   
+    private String nomeCientifico;
+    private String familia;
+    private String comportamentos;
+
     public Especie() {
     }
 
@@ -22,6 +20,37 @@ public class Especie {
     public void setNome(String nome) {
         this.nome = nome;
     }
-    
-     
+
+    public ObjectId getId() {
+        return _id;
+    }
+
+    public void setId(ObjectId id) {
+        this._id = id;
+    }
+
+    public String getNomeCientifico() {
+        return nomeCientifico;
+    }
+
+    public void setNomeCientifico(String nomeCientifico) {
+        this.nomeCientifico = nomeCientifico;
+    }
+
+    public String getFamilia() {
+        return familia;
+    }
+
+    public void setFamilia(String familia) {
+        this.familia = familia;
+    }
+
+    public String getComportamentos() {
+        return comportamentos;
+    }
+
+    public void setComportamentos(String comportamentos) {
+        this.comportamentos = comportamentos;
+    }
+
 }

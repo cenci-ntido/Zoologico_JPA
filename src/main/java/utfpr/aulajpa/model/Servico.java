@@ -1,36 +1,27 @@
 package utfpr.aulajpa.model;
 
 import java.sql.Timestamp;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import org.bson.types.ObjectId;
 
-@Entity
 public class Servico {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private ObjectId _id;
     private String descricao;
     private Timestamp dataHoraCadastro;
     private Timestamp dataHoraFim;
     private boolean realizado;
-    @ManyToOne
-    private Animal animal;
-    @ManyToOne
-    private Profissional profissional;
+    private ObjectId id_animal;
+    private ObjectId id_profissional;
 
     public Servico() {
     }
 
-    public Timestamp getDataHoraFim() {
-        return dataHoraFim;
+    public ObjectId getId() {
+        return _id;
     }
 
-    public void setDataHoraFim(Timestamp dataHoraFim) {
-        this.dataHoraFim = dataHoraFim;
+    public void setId(ObjectId _id) {
+        this._id = _id;
     }
 
     public String getDescricao() {
@@ -41,37 +32,20 @@ public class Servico {
         this.descricao = descricao;
     }
 
-    @Override
-    public String toString() {
-        return "Serviço código: " + id + ", descricao=" + descricao + ", "
-                + "dataHoraCadastro=" + dataHoraCadastro + ", "
-                + "dataHoraFim=" + dataHoraFim + ", "
-                + "realizado=" + realizado + ", animal=" + this.animal.getNome()
-                + ", profissional=" + this.profissional.getNome() + '}';
-    }
-
-    public Timestamp getDataHora() {
+    public Timestamp getDataHoraCadastro() {
         return dataHoraCadastro;
     }
 
-    public void setDataHora(Timestamp dataHora) {
-        this.dataHoraCadastro = dataHora;
+    public void setDataHoraCadastro(Timestamp dataHoraCadastro) {
+        this.dataHoraCadastro = dataHoraCadastro;
     }
 
-    public Animal getAnimal() {
-        return animal;
+    public Timestamp getDataHoraFim() {
+        return dataHoraFim;
     }
 
-    public void setAnimal(Animal animal) {
-        this.animal = animal;
-    }
-
-    public Profissional getProfissional() {
-        return profissional;
-    }
-
-    public void setProfissional(Profissional profissional) {
-        this.profissional = profissional;
+    public void setDataHoraFim(Timestamp dataHoraFim) {
+        this.dataHoraFim = dataHoraFim;
     }
 
     public boolean isRealizado() {
@@ -80,6 +54,22 @@ public class Servico {
 
     public void setRealizado(boolean realizado) {
         this.realizado = realizado;
+    }
+
+    public ObjectId getId_animal() {
+        return id_animal;
+    }
+
+    public void setId_animal(ObjectId id_animal) {
+        this.id_animal = id_animal;
+    }
+
+    public ObjectId getId_profissional() {
+        return id_profissional;
+    }
+
+    public void setId_profissional(ObjectId id_profissional) {
+        this.id_profissional = id_profissional;
     }
 
 }
