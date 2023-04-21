@@ -28,12 +28,12 @@ import com.mongodb.client.model.Filters;
 
 public class App {
 
-    private static MongoClient client = new MongoClient();
-    private static MongoDatabase db = client.getDatabase("Zoologico");
-    private static MongoCollection<Document> especies = db.getCollection("especie");
-    private static MongoCollection<Document> profissionais = db.getCollection("profissional");
-    private static MongoCollection<Document> animais = db.getCollection("animal");
-    private static MongoCollection<Document> servicos = db.getCollection("servico");
+    private static final MongoClient client = new MongoClient();
+    private static final MongoDatabase db = client.getDatabase("Zoologico");
+    private static final MongoCollection<Document> especies = db.getCollection("especie");
+    private static final MongoCollection<Document> profissionais = db.getCollection("profissional");
+    private static final MongoCollection<Document> animais = db.getCollection("animal");
+    private static final MongoCollection<Document> servicos = db.getCollection("servico");
     public static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) throws ParseException {
@@ -48,6 +48,9 @@ public class App {
                            4 - Cadastrar serviço
                            5 - Listar Serviços não realizados
                            6 - Listar animais
+                           7 - Atualizar responsável do 
+                           8 - Cadastrar Animal 2
+                           9 - Excluir Serviço
                            ==========Informe uma Opção=========
                                """);
             int opcao = scanner.nextInt();
@@ -68,12 +71,21 @@ public class App {
                 case 4 -> {
                     cadastrarServico();
                 }
-//                case 5 -> {
-//                    listarServicosNaoRealizados();
-//                }
-//                case 6 -> {
-//                    listarAnimais();
-//                }
+                case 5 -> {
+                    listarServicosNaoRealizados();
+                }
+                case 6 -> {
+                    listarAnimais();
+                }
+                case 7 -> {
+                    atualizarProfServico();
+                }
+                case 8 -> {
+                    cadastrarAnimal2();
+                }
+                case 9 -> {
+                    excluirServico();
+                }
                 default -> {
                     System.out.println("Opção inválida.");
                     break;
@@ -81,6 +93,7 @@ public class App {
             }
         }
         System.out.println("\n********_A_D_E_U_S_********\n");
+        client.close();
     }
 
     public static void cadastrarEspecie() {
@@ -224,7 +237,7 @@ public class App {
                 System.out.println("Opção inválida, digite novamente!");
             }
         }
-        
+
         Timestamp dataHoraFim = null;
         loop = true;
         while (loop) {
@@ -252,23 +265,113 @@ public class App {
         System.out.println("Serviço Cadastrado!");
     }
 
-//    public static void listarServicosNaoRealizados() {
-//        EntityManager em = Factory.getEntityManager();
-//        ServicoDAO servicoDAO = new ServicoDAO(em);
-//        em.getTransaction().begin();
-//        List<Servico> servicosNaoRealizados = servicoDAO.listarServicosNaoRealizados();
-//        servicosNaoRealizados.stream().forEach(servico -> System.out.println(servico.toString()));
-//        em.getTransaction().commit();
-//        em.close();
-//    }
-//
-//    public static void listarAnimais() {
-//        EntityManager em = Factory.getEntityManager();
-//        AnimalDAO animalDAO = new AnimalDAO(em);
-//        em.getTransaction().begin();
-//        List<Animal> animais = animalDAO.buscaTodos();
-//        animais.stream().forEach(animal -> System.out.println(animal.toString()));
-//        em.getTransaction().commit();
-//        em.close();
-//    }
+    public static void listarServicosNaoRealizados() {
+        MongoCursor<Document> resultados = servicos.find(Filters.eq("realizado", false)).iterator();
+        int i = 1;
+        while (resultados.hasNext()) {
+            System.out.println("Serviço " + i + ": \n" + resultados.next());
+            i++;
+        }
+    }
+
+    public static void listarAnimais() {
+        MongoCursor<Document> resultados = animais.find().iterator();
+        int i = 1;
+        while (resultados.hasNext()) {
+            System.out.println("Animal " + i + ": \n" + resultados.next());
+            i++;
+        }
+    }
+
+    private static void atualizarProfServico() {
+        System.out.println("Informe a descrição do serviço:");
+        String descricao = scanner.next();
+
+        Document profissional = null;
+        boolean sair = false;
+        while (!sair) {
+            System.out.println("Informe o nome do novo profissional responsável: ");
+            String nomeProfissional = scanner.next();
+            MongoCursor<Document> profissionaisRes = profissionais.find(
+                    Filters.eq("nome", nomeProfissional))
+                    .limit(1)
+                    .iterator();
+            if (profissionaisRes.hasNext()) {
+                // Se houver um resultado o método next() para obter o documento 
+                profissional = profissionaisRes.next();
+                sair = true;
+            } else {
+                System.out.println("Profissional não encontrado, tente novamente!");
+            }
+        }
+
+        servicos.updateOne(Filters.eq("descricao", descricao),
+                new Document("$set", new Document("descricao", descricao)
+                        .append("id_profissional", profissional.getObjectId("_id"))));
+
+        System.out.println("Serviço atualizado!");
+    }
+
+    private static void cadastrarAnimal2() {
+        System.out.println("Informe o nome do animal: ");
+        String nome = scanner.next();
+
+        Profissional profissional = new Profissional();
+        Document aux1 = null;
+        boolean sair = false;
+        while (!sair) {
+            System.out.println("Informe o nome do profissional responsável: ");
+            String nomeProfissional = scanner.next();
+            MongoCursor<Document> profissionaisRes = profissionais.find(
+                    Filters.eq("nome", nomeProfissional))
+                    .limit(1)
+                    .iterator();
+            if (profissionaisRes.hasNext()) {
+                // Se houver um resultado o método next() para obter o documento 
+                aux1 = profissionaisRes.next();
+                Gson gson = new Gson();
+                profissional = gson.fromJson(aux1.toJson(), Profissional.class);
+                sair = true;
+            } else {
+                System.out.println("Profissional não encontrado, tente novamente!");
+            }
+        }
+
+        Especie especie = new Especie();
+        Document aux2 = null;
+        sair = false;
+        while (!sair) {
+            System.out.println("Informe o nome da espécie: ");
+            String nomeEspecie = scanner.next();
+            MongoCursor<Document> especiesRes = especies.find(
+                    Filters.eq("nome", nomeEspecie))
+                    .limit(1)
+                    .iterator();
+            if (especiesRes.hasNext()) {
+                // Se houver um resultado o método next() para obter o documento 
+                aux2 = especiesRes.next();
+                Gson gson = new Gson();
+                especie = gson.fromJson(aux2.toJson(), Especie.class);
+                sair = true;
+            } else {
+                System.out.println("Espécie não encontrada, tente novamente!");
+            }
+        }
+
+        Document animal = new Document("nome", nome)
+                .append("id_profissional", especie.getId())
+                .append("id_especie", profissional.getId());
+
+        animais.insertOne(animal);
+        System.out.println("Animal Cadastrado!");
+    }
+
+    private static void excluirServico() {
+        System.out.println("Informe a descrição do serviço:");
+        String descricao = scanner.next();
+        
+        servicos.deleteOne(Filters.eq("descricao", descricao));
+        
+        System.out.println("Serviço excluido!");
+    }
 }
