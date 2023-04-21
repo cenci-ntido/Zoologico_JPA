@@ -1,4 +1,4 @@
-package utfpr.aulajpa.model;
+package Main;
 
 import java.sql.Timestamp;
 import org.bson.types.ObjectId;

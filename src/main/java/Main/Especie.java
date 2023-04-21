@@ -1,4 +1,4 @@
-package utfpr.aulajpa.model;
+package Main;
 
 import org.bson.types.ObjectId;
 

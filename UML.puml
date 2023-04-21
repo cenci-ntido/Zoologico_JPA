@@ -1,0 +1,39 @@
+@startuml
+class Main.App
+class com.google.gson.Gson
+class com.mongodb.MongoClient
+class com.mongodb.client.MongoCollection
+class com.mongodb.client.MongoCursor
+class com.mongodb.client.MongoDatabase
+class com.mongodb.client.model.Filters
+class java.sql.Timestamp
+class java.text.ParseException
+class java.text.SimpleDateFormat
+class java.time.LocalDateTime
+class java.util.List
+class java.util.Scanner
+class javax.persistence.EntityManager
+class org.bson.Document
+class utfpr.aulajpa.model.Animal
+class utfpr.aulajpa.model.Especie
+class utfpr.aulajpa.model.Profissional
+class utfpr.aulajpa.model.Servico
+Main.App ..> com.google.gson.Gson
+Main.App ..> com.mongodb.MongoClient
+Main.App ..> com.mongodb.client.MongoCollection
+Main.App ..> com.mongodb.client.MongoCursor
+Main.App ..> com.mongodb.client.MongoDatabase
+Main.App ..> com.mongodb.client.model.Filters
+Main.App ..> java.sql.Timestamp
+Main.App ..> java.text.ParseException
+Main.App ..> java.text.SimpleDateFormat
+Main.App ..> java.time.LocalDateTime
+Main.App ..> java.util.List
+Main.App ..> java.util.Scanner
+Main.App ..> javax.persistence.EntityManager
+Main.App ..> org.bson.Document
+Main.App ..> utfpr.aulajpa.model.Animal
+Main.App ..> utfpr.aulajpa.model.Especie
+Main.App ..> utfpr.aulajpa.model.Profissional
+Main.App ..> utfpr.aulajpa.model.Servico
+@enduml
